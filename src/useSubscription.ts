@@ -1,8 +1,8 @@
-import {useState, useEffect, useMemo} from 'react'
-import {GroqStore, Subscription} from '@sanity/groq-store'
-import {ProjectConfig} from './types'
-import {getCurrentUser} from './currentUser'
-import {getAborter, Aborter} from './aborter'
+import { useState, useEffect, useMemo } from 'react'
+import { GroqStore, Subscription } from '@sanity/groq-store'
+import { ProjectConfig } from './types'
+import { getCurrentUser } from './currentUser'
+import { getAborter, Aborter } from './aborter'
 
 const EMPTY_PARAMS = {}
 
@@ -20,7 +20,7 @@ export function createPreviewSubscriptionHook({
   token,
   EventSource,
   documentLimit = 3000,
-}: ProjectConfig & {documentLimit?: number}) {
+}: ProjectConfig & { documentLimit?: number }) {
   // Only construct/setup the store when `getStore()` is called
   let store: Promise<GroqStore>
 
@@ -28,7 +28,7 @@ export function createPreviewSubscriptionHook({
     query: string,
     options: SubscriptionOptions<R> = {}
   ) {
-    const {params = EMPTY_PARAMS, initialData, enabled} = options
+    const { params = EMPTY_PARAMS, initialData, enabled } = options
     return useQuerySubscription<R>({
       getStore,
       projectId,
@@ -42,7 +42,7 @@ export function createPreviewSubscriptionHook({
 
   function getStore(abort: Aborter) {
     if (!store) {
-      store = import('@sanity/groq-store').then(({groqStore}) => {
+      store = import('@sanity/groq-store').then(({ groqStore }) => {
         // Skip creating the groq store if we've been unmounted to save memory and reduce gc pressure
         if (abort.signal.aborted) {
           const error = new Error('Cancelling groq store creation')
@@ -76,7 +76,7 @@ function useQuerySubscription<R = any>(options: {
   enabled: boolean
   token?: string
 }) {
-  const {getStore, projectId, query, initialData, enabled = false, token} = options
+  const { getStore, projectId, query, initialData, enabled = false, token } = options
   const [error, setError] = useState<Error>()
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState<R>()
@@ -120,6 +120,7 @@ function useQuerySubscription<R = any>(options: {
     return () => {
       if (subscription) {
         subscription.unsubscribe()
+        setData()
       }
 
       aborter.abort()
